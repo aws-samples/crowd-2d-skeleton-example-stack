@@ -39,8 +39,13 @@ create_example_labeling_job.py
 ## Step 3: Label the data
 After you have launched the example labeling job it will appear in the AWS console as well as the workforce portal.
 ![](../docs/aws_sagemaker_ground_truth_console_1.png)
+
+
 In the workforce portal, select the labeling job and click start working.
+
 ![](../docs/aws_sagemaker_ground_truth_console_2.png)
+
+
 Once in the job you will be presented with an image from the example dataset.
 At this point you can use the custom crowd-2d-skeleton UI (shown below) to
 annotate the images. You can familiarize yourself with the crowd-2d-skeleton
