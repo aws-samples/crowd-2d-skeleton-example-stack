@@ -1,0 +1,34 @@
+
+<script src="https://assets.crowd.aws/crowd-html-elements.js"></script>
+
+<script>
+  async function load(){
+    const url = "URL_TO_HOSTED_JS_GOES_HERE"
+    const response = await fetch(url);
+    const code = await response.text();
+    const scriptElement = document.createElement('script');
+    scriptElement.type = "module";
+    scriptElement.text = code;
+    scriptElement.id = 'crowd-2d-skeleton-code';
+    document.head.appendChild(scriptElement);
+  }
+  load();
+</script>
+
+<crowd-form id="crowd-form">
+  <!-- By default, the crowd-form will add a submit button unless one is created at the top level.
+       We want to hide this since the crowd 2D component provides one for us.
+  -->
+  <crowd-button form-action="submit" style="display: none;"></crowd-button>
+  <crowd-2d-skeleton
+          imgSrc="{{ task.input.image_s3_uri | grant_read_access }}"
+          keypointClasses='[{"id":"7e7c0da2-53a7-4dd5-a485-dccb95d67df6","color":"red","label":"top_of_head","x":121,"y":0},{"id":"b9e70a14-cf4d-404a-8503-a63d7e252548","color":"#FF7F0E","label":"front_of_face","x":123,"y":47},{"id":"d3e4f3de-da74-4a6e-bb0d-6c3585a4fabe","color":"#D62728","label":"right_shoulder","x":64,"y":96},{"id":"6145ed0e-5e5a-4bae-a1ca-f30a2d481f38","color":"#9467BD","label":"right_elbow","x":13,"y":137},{"id":"247dd6f7-66c5-4721-9824-44086a5c5e1e","color":"#8C564B","label":"right_wrist","x":0,"y":186},{"id":"db7976a5-c661-466e-9ac5-939160e7a5bf","color":"#E377C2","label":"left_shoulder","x":184,"y":92},{"id":"9a289bae-975b-4d03-a4c3-e8fd5d5d2f85","color":"#7F7F7F","label":"left_elbow","x":239,"y":143},{"id":"8a13780d-1dd4-4ea9-98dd-76faab35907d","color":"#BCBC22","label":"left_wrist","x":256,"y":190},{"id":"0c589098-ae05-499a-b1a8-5693431c0b87","color":"#FF9896","label":"left_hip","x":180,"y":199},{"id":"fbafb238-f21a-49d6-9709-3b2b82be8c8b","color":"#17BECF","label":"left_knee","x": 205,"y":271},{"id":"b4fc3a94-5ed9-4608-b973-e835c2920b6a","color":"#AEC7E8","label":"left_ankle","x":229,"y":353},{"id":"497edf34-3050-421f-98d9-39a7b6e70d01","color":"#FFBB78","label":"left_heel","x":219,"y":373},{"id":"e77912a3-150d-4e8f-a7fe-d2f2fa20d311","color":"#98DF8A","label":"left_toe","x":278,"y":376},{"id":"e80e7b1b-ef4c-4ffc-8e80-e27c20253082","color":"#C5B0D5","label":"right_hip","x":74,"y":206},{"id":"d14a9973-fd9f-4b1b-887c-5f8abebcdc9f","color":"#C49C94","label":"right_knee","x":63,"y":295},{"id":"43c9d3c9-81e4-42b9-8a36-49b74e0ec864","color":"#F7B6D2","label":"right_ankle","x":59,"y":361},{"id":"427156f5-3d01-4930-b334-6d5a32b304fa","color":"#C7C7C7","label":"right_heel","x":70,"y":383},{"id":"0f84e215-a650-4cd8-bbdc-aac19e1f5a37","color":"#DBDB8D","label":"right_toe","x":12,"y":389}]'
+          skeletonRig='[["left_ankle","left_knee", "red"],["left_knee","left_hip", "red"],["right_ankle","right_knee", "blue"],["right_knee","right_hip", "blue"],["left_hip","right_hip"],["left_shoulder","left_hip", "red"],["right_shoulder","right_hip", "blue"],["left_shoulder","right_shoulder"],["left_shoulder","left_elbow", "red"],["right_shoulder","right_elbow", "blue"],["left_elbow","left_wrist", "red"],["right_elbow","right_wrist", "blue"],["top_of_head","front_of_face"],["left_ankle","left_toe", "red"],["left_ankle","left_heel", "red"],["right_ankle","right_toe", "blue"],["right_ankle","right_heel", "blue"]]'
+          skeletonBoundingBox='{"left":0,"top":0,"right":278,"bottom":389}'
+          initialValues="{{ task.input.initial_values }}"
+  >
+    <div slot="instructions">
+      <p>Annotations instructions can go here!</p>
+    </div>
+  </crowd-2d-skeleton>
+</crowd-form>

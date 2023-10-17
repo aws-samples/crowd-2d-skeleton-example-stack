@@ -1,0 +1,15 @@
+*.swp
+package-lock.json
+__pycache__
+.pytest_cache
+.venv
+*.egg-info
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out
+scripts/images
+scripts/example_manifest.txt
+.idea
+cdk/ground_truth_templates/crowd-2d-skeleton.js
+example_manifest.txt
