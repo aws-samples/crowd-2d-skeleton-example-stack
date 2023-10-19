@@ -13,6 +13,7 @@ from aws_cdk import (
     aws_s3_deployment,
     aws_ssm,
 )
+from cdk_nag import NagSuppressions
 from constructs import Construct
 
 
@@ -25,6 +26,7 @@ class Crowd2DSkeletonExampleStack(Stack):
             "Bucket",
             block_public_access=aws_s3.BlockPublicAccess.BLOCK_ALL,
             encryption=aws_s3.BucketEncryption.S3_MANAGED,
+            enforce_ssl=True,
             auto_delete_objects=True,
             removal_policy=RemovalPolicy.DESTROY,
             cors=[
@@ -48,17 +50,22 @@ class Crowd2DSkeletonExampleStack(Stack):
                         s3_bucket_source=bucket,
                         origin_access_identity=origin_access_identity,
                     ),
-                    behaviors=[aws_cloudfront.Behavior(is_default_behavior=True)],
+                    behaviors=[
+                        aws_cloudfront.Behavior(
+                            viewer_protocol_policy=aws_cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
+                            is_default_behavior=True,
+                        )
+                    ],
                 )
             ],
         )
 
         distribution_response_policy = aws_cloudfront.CfnResponseHeadersPolicy(
             self,
-            "PoseResponseHeaderPolicy",
+            "ResponseHeaderPolicy",
             response_headers_policy_config=aws_cloudfront.CfnResponseHeadersPolicy.ResponseHeadersPolicyConfigProperty(
-                name="PoseResponseHeaderPolicy",
-                comment="Policy for Pose JS file share",
+                name="ResponseHeaderPolicy",
+                comment="Policy for JS file share",
                 cors_config=aws_cloudfront.CfnResponseHeadersPolicy.CorsConfigProperty(
                     access_control_allow_credentials=False,
                     access_control_allow_headers=aws_cloudfront.CfnResponseHeadersPolicy.AccessControlAllowHeadersProperty(
@@ -125,7 +132,7 @@ class Crowd2DSkeletonExampleStack(Stack):
         pre_annotation_lambda = aws_lambda.Function(
             self,
             "pre_annotation_lambda",
-            runtime=aws_lambda.Runtime.PYTHON_3_9,
+            runtime=aws_lambda.Runtime.PYTHON_3_10,
             code=aws_lambda.Code.from_asset(path.join("cdk", "pre_annotation_lambda")),
             handler="lambda_function.lambda_handler",
             timeout=Duration.seconds(30),
@@ -134,7 +141,7 @@ class Crowd2DSkeletonExampleStack(Stack):
         post_annotation_lambda = aws_lambda.Function(
             self,
             "post_annotation_lambda",
-            runtime=aws_lambda.Runtime.PYTHON_3_9,
+            runtime=aws_lambda.Runtime.PYTHON_3_10,
             code=aws_lambda.Code.from_asset(path.join("cdk", "post_annotation_lambda")),
             role=lambda_role,
             handler="lambda_function.lambda_handler",
@@ -225,4 +232,23 @@ class Crowd2DSkeletonExampleStack(Stack):
             "sagemaker_ground_truth_role",
             parameter_name="/crowd_2d_skeleton_example_stack/sagemaker_ground_truth_role",
             string_value=sagemaker_ground_truth_labeling_job_role.role_arn,
+        )
+
+        NagSuppressions.add_resource_suppressions(
+            bucket,
+            [
+                {"id": "AwsSolutions-S1", "reason": "Log bucket not available."},
+            ],
+        )
+        NagSuppressions.add_resource_suppressions(
+            distribution,
+            [
+                {"id": "AwsSolutions-CFR3", "reason": "Log bucket not available."},
+                {
+                    "id": "AwsSolutions-CFR4",
+                    "reason": "SSLv2 are not configurable via this API",
+                },
+                {"id": "AwsSolutions-CFR1", "reason": "No GEO restrictions required"},
+                {"id": "AwsSolutions-CFR2", "reason": "No AWS WAF required"},
+            ],
         )
